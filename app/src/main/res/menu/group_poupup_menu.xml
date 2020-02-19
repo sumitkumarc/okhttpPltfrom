@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/pop_edit_group"
+        android:icon="@drawable/ic_menu"
+        android:title="Edit Group" />
+    <item
+        android:id="@+id/pop_all_member"
+        android:icon="@drawable/ic_menu"
+        android:title="All member" />
+    <item
+        android:id="@+id/pop_point_table"
+        android:icon="@drawable/ic_menu"
+        android:title="Point Table" />
+    <item
+        android:id="@+id/pop_leave_group"
+        android:icon="@drawable/ic_menu"
+        android:title="Leave group" />
+</menu>

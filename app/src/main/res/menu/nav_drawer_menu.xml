@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<!--    <item-->
+<!--        android:id="@+id/navigation_home"-->
+<!--        android:icon="@drawable/ic_home"-->
+<!--        android:title="@string/title_home" />-->
+<!--    <item-->
+<!--        android:id="@+id/navigation_group"-->
+<!--        android:icon="@drawable/ic_group"-->
+<!--        android:title="@string/title_group" />-->
+<!--    <item-->
+<!--        android:id="@+id/navigation_Prediction"-->
+<!--        android:icon="@drawable/ic_help"-->
+<!--        android:title="@string/title_prediction" />-->
+<!--    <item-->
+<!--        android:id="@+id/navigation_Profile"-->
+<!--        android:icon="@drawable/ic_account"-->
+<!--        android:title="@string/title_profile" />-->
+
+<!--    <item-->
+<!--        android:id="@+id/navigation_Invite_Group"-->
+<!--        android:icon="@drawable/ic_notifications_black_24dp"-->
+<!--        android:title="Invite Group" />-->
+
+<!--    <item-->
+<!--        android:id="@+id/navigation_Invite_Group_Accept"-->
+<!--        android:icon="@drawable/ic_notifications_black_24dp"-->
+<!--        android:title="Invite Group Accept" />-->
+
+<!--    <item-->
+<!--        android:id="@+id/navigation_Leave_Cong"-->
+<!--        android:icon="@drawable/ic_notifications_black_24dp"-->
+<!--        android:title="Leave Cong." />-->
+<!--    <item-->
+<!--        android:id="@+id/navigation_My_Group"-->
+<!--        android:icon="@drawable/ic_notifications_black_24dp"-->
+<!--        android:title="My Group" />-->
+<!--    <item-->
+<!--        android:id="@+id/navigation_per_group"-->
+<!--        android:icon="@drawable/ic_notifications_black_24dp"-->
+<!--        android:title="Group 1" />-->
+
+<!--    <item-->
+<!--        android:id="@+id/navigation_log_out"-->
+<!--        android:icon="@drawable/ic_notifications_black_24dp"-->
+<!--        android:title="@string/title_log_out" />-->
+</menu>

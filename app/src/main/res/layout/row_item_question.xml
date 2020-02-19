@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/_5sdp"
+    android:background="@drawable/btn_corner5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_5sdp"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.10"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/ans_pos"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/que_circle"
+                android:gravity="center"
+                android:text="A"
+                android:textColor="@color/text_color_white" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.90"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/ans_1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center|left"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:text="1"
+                android:textColor="@android:color/black"
+                android:textSize="@dimen/_14sdp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_color"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    tools:context=".activity.StartActivity">
+
+    <ImageView
+        android:id="@+id/iv_image"
+        android:src="@drawable/login_back"
+        android:layout_width="wrap_content"
+        android:layout_height="230dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:shadowColor="#616161"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="1"
+        android:text="Welcome"
+        android:textColor="@color/text_color_white"
+        android:textSize="@dimen/_25ssp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="| | One Team, One Fight | |"
+        android:textColor="@color/text_color_white"
+        android:textSize="@dimen/_14ssp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.90"
+        android:gravity="bottom|center"
+        android:orientation="vertical">
+
+
+        <Button
+            android:id="@+id/btn_Facebook_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/fb" />
+
+        <Button
+            android:id="@+id/btn_Google_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/google" />
+
+        <Button
+            android:id="@+id/bt_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/login" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_Reg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
+        android:layout_weight="1.3"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="bottom"
+            android:text="Don’t have an account?"
+            android:textColor="@color/text_color_white"
+            android:textSize="@dimen/_14ssp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:shadowColor="#616161"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:text=" Create account"
+            android:textColor="@color/text_color_white"
+            android:textSize="@dimen/_18ssp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+
+</LinearLayout>
