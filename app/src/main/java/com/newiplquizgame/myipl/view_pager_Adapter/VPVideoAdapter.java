@@ -35,7 +35,7 @@ public class VPVideoAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return 6;
+        return 5;
     }
 
     @Override
@@ -44,10 +44,10 @@ public class VPVideoAdapter extends PagerAdapter {
 
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View itemview;
-        if (position == 5) {
+        if (position == 4) {
             itemview = inflater.inflate(R.layout.item_row_view_more, container, false);
             Button materialButton = itemview.findViewById(R.id.MB_more);
-            materialButton.setText("More Video's");
+            materialButton.setText("More Videos");
             materialButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

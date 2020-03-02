@@ -9,6 +9,7 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.newiplquizgame.myipl.R;
 import com.newiplquizgame.myipl.extra.AppConstant;
@@ -16,13 +17,16 @@ import com.newiplquizgame.myipl.extra.Common;
 import com.newiplquizgame.myipl.managers.SharedPreferenceManagerFile;
 import com.newiplquizgame.myipl.managers.communications.APIcall;
 import com.newiplquizgame.myipl.pkg.Example;
+import com.onesignal.OSPermissionSubscriptionState;
+import com.onesignal.OneSignal;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import okhttp3.RequestBody;
 
-import static com.newiplquizgame.myipl.extra.Common.EMAIL_PATTEN;
+import static com.newiplquizgame.myipl.extra.AppValidation.validateEmail;
+import static com.newiplquizgame.myipl.extra.AppValidation.validatePassword;
 import static com.newiplquizgame.myipl.extra.Common.isempty;
 
 public class LoginActivity extends AppCompatActivity implements APIcall.ApiCallListner {
@@ -32,18 +36,28 @@ public class LoginActivity extends AppCompatActivity implements APIcall.ApiCallL
     private SharedPreferenceManagerFile sharedPref;
     TextInputEditText ed_email_id;
     TextInputEditText ed_password;
+    String onesignaltoken;
+    TextInputLayout ti_password;
+    TextInputLayout ti_email_id;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         sharedPref = new SharedPreferenceManagerFile(this);
+        OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
+        onesignaltoken = status.getSubscriptionStatus().getUserId();
         findViewBind();
     }
 
     private void findViewBind() {
+        ti_email_id = findViewById(R.id.ti_email_id);
+        ti_password = findViewById(R.id.ti_password);
+
         ed_email_id = findViewById(R.id.ed_email_id);
         ed_password = findViewById(R.id.ed_password);
+
         findViewById(R.id.ll_Reg).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,25 +69,13 @@ public class LoginActivity extends AppCompatActivity implements APIcall.ApiCallL
         findViewById(R.id.bt_login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ed_email_id.getText().toString().equals("") || ed_email_id.getText().toString() == null) {
-                    Common.displayToastMessageShort(LoginActivity.this, "Enter your email-id.", true);
+                if (!validateEmail(ed_email_id.getText().toString().trim(), ti_email_id) | !validatePassword(ed_password.getText().toString().trim(), ti_password)) {
                     return;
                 }
-                if (ed_password.getText().toString().equals("") || ed_password.getText().toString() == null) {
-                    Common.displayToastMessageShort(LoginActivity.this, "Enter your password.", true);
-                    return;
-                }
-
-                if (ed_email_id.getText().toString().matches(EMAIL_PATTEN)) {
-                    if (Common.isInternetAvailable(LoginActivity.this)) {
-                        callAPItoLogin(ed_email_id.getText().toString(), ed_password.getText().toString(), 0);
-                    } else {
-                        Common.displayToastMessageShort(LoginActivity.this, "No connection found. Please connect & try again.", true);
-                    }
-                    return;
+                if (Common.isInternetAvailable(LoginActivity.this)) {
+                    callAPItoLogin(ed_email_id.getText().toString(), ed_password.getText().toString(), 0);
                 } else {
-                    Common.displayToastMessageShort(LoginActivity.this, "Enter Your Email Valid Address.", true);
-                    return;
+                    Common.displayToastMessageShort(LoginActivity.this, "No connection found. Please connect & try again.", true);
                 }
             }
         });
@@ -86,6 +88,7 @@ public class LoginActivity extends AppCompatActivity implements APIcall.ApiCallL
             jsonObject.put("Email", emailid);
             jsonObject.put("Password", password);
             jsonObject.put("LoginType", loginType);
+            jsonObject.put("OneSignalToken", onesignaltoken);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -114,15 +117,20 @@ public class LoginActivity extends AppCompatActivity implements APIcall.ApiCallL
         if (operationCode == APIcall.OPERATION_LOGIN) {
             Gson gson = new Gson();
             example = gson.fromJson(response, Example.class);
+
             if (example.getAccessToken() != null) {
-                sharedPref.setInSharedPreference(SharedPreferenceManagerFile.SESSION_GUID, isempty(example.getTokenType()) + " " + isempty(example.getAccessToken()));
+                sharedPref.setStringSharedPreference(SharedPreferenceManagerFile.SESSION_GUID, isempty(example.getTokenType()) + " " + isempty(example.getAccessToken()));
                 sharedPref.setBooleanSharedPreference(SharedPreferenceManagerFile.ISLOGIN, true);
-                sharedPref.setInSharedPreference(SharedPreferenceManagerFile.EMAIL, isempty(example.getUser().getEmail()));
-                sharedPref.setInSharedPreference(SharedPreferenceManagerFile.USER_NAME, isempty(example.getUser().getDisplayName()));
-                sharedPref.setInSharedPreference(SharedPreferenceManagerFile.USER_PROFILE_PIC, isempty(example.getUser().getPhoto()));
+                sharedPref.setStringSharedPreference(SharedPreferenceManagerFile.NICKNAME, example.getUser().getNickName());
+                sharedPref.setIntSharedPreference(SharedPreferenceManagerFile.ISLOGINBYINT, example.getUser().getLoginType());
+                sharedPref.setStringSharedPreference(SharedPreferenceManagerFile.EMAIL, isempty(example.getUser().getEmail()));
+                sharedPref.setIntSharedPreference(SharedPreferenceManagerFile.USERID, example.getUser().getUserId());
+                sharedPref.setStringSharedPreference(SharedPreferenceManagerFile.USER_NAME, isempty(example.getUser().getDisplayName()));
+                sharedPref.setStringSharedPreference(SharedPreferenceManagerFile.USER_PROFILE_PIC, isempty(example.getUser().getPhoto()));
                 Intent intent = new Intent(LoginActivity.this, DashboardActivity.class);
                 startActivity(intent);
                 Common.displayToastMessageShort(LoginActivity.this, "Successful login", true);
+                cleared();
             } else {
                 try {
                     JSONObject json = new JSONObject(response);
@@ -151,5 +159,10 @@ public class LoginActivity extends AppCompatActivity implements APIcall.ApiCallL
     private void hideDialog() {
         if (dialog != null && dialog.isShowing())
             dialog.dismiss();
+    }
+
+    private void cleared() {
+        ed_email_id.setText("");
+        ed_password.setText("");
     }
 }

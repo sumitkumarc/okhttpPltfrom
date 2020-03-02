@@ -154,7 +154,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="@font/montserrat"
                                 android:gravity="center"
-                                android:text="Test 1"
+                                android:text="-----"
 
                                 android:textSize="12.0sp" />
 
@@ -196,7 +196,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="@font/montserrat"
                                 android:gravity="center"
-                                android:text="Test 1"
+                                android:text="-----"
 
                                 android:textSize="12.0sp" />
 
@@ -239,7 +239,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="@font/montserrat"
                                 android:gravity="center"
-                                android:text="Test 1"
+                                android:text="-----"
                                 android:textColor="@color/colorPrimaryDark"
                                 android:textSize="12.0sp"
                                 android:textStyle="bold" />
@@ -283,7 +283,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="@font/montserrat"
                                 android:gravity="center"
-                                android:text="Test 1"
+                                android:text="-----"
 
                                 android:textSize="12.0sp" />
 
@@ -325,7 +325,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="@font/montserrat"
                                 android:gravity="center"
-                                android:text="Test 1"
+                                android:text="-----"
 
                                 android:textSize="12.0sp" />
 
@@ -367,7 +367,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="@font/montserrat"
                                 android:gravity="center"
-                                android:text="Test 1"
+                                android:text="-----"
 
                                 android:textSize="12.0sp" />
 
@@ -409,7 +409,7 @@
                                 android:layout_weight="1"
                                 android:fontFamily="@font/montserrat"
                                 android:gravity="center"
-                                android:text="Test 1"
+                                android:text="-----"
 
                                 android:textSize="12.0sp" />
 

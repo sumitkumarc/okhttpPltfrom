@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/text_color_white"
+    android:orientation="vertical"
+    tools:context=".activity.SingleGroupActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/bt_close"
+                android:layout_width="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="@android:color/white"
+                app:srcCompat="@drawable/ic_close" />
+
+            <TextView
+                android:id="@+id/txt_tital"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="Create Group"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+                android:textColor="@android:color/white" />
+
+
+            <!--            <Button-->
+            <!--                android:id="@+id/bt_save"-->
+            <!--                style="@style/Widget.AppCompat.Button.Borderless"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="match_parent"-->
+            <!--                android:gravity="center"-->
+            <!--                android:paddingLeft="@dimen/spacing_xsmall"-->
+            <!--                android:paddingRight="@dimen/spacing_xsmall"-->
+            <!--                android:text="@string/SAVE"-->
+            <!--                android:textColor="@android:color/white" />-->
+
+        </LinearLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginRight="@dimen/_20sdp"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|top"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8.0dip">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="200.0dip"
+                    android:layout_height="200.0dip"
+                    android:layout_gravity="center"
+                    android:alpha="0.1"
+                    android:src="@drawable/shadow" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="175.0dip"
+                    android:layout_height="175.0dip"
+                    android:layout_gravity="center"
+                    android:alpha="0.15"
+                    android:src="@drawable/shadow" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="150.0dip"
+                    android:layout_height="150.0dip"
+                    android:layout_gravity="center"
+                    android:alpha="0.3"
+                    android:src="@drawable/shadow" />
+
+                <androidx.coordinatorlayout.widget.CoordinatorLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_gravity="center">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@id/iv_profile"
+                        android:layout_width="125.0dip"
+                        android:layout_height="125.0dip"
+                        android:layout_gravity="center"
+                        android:src="@drawable/logo" />
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/iv_add_profile"
+                        android:layout_width="36.0dip"
+                        android:layout_height="36.0dip"
+                        android:layout_marginBottom="5dp"
+                        android:background="@drawable/btn_corner"
+                        android:backgroundTint="@color/colorPrimaryDark"
+                        android:padding="9.0dip"
+                        android:src="@drawable/ic_edit_white_24dp"
+                        android:tint="@android:color/white"
+                        app:layout_anchor="@+id/iv_profile"
+                        app:layout_anchorGravity="end|bottom|center"
+                        tools:ignore="VectorDrawableCompat" />
+                </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+            </FrameLayout>
+
+            <EditText
+                android:id="@+id/ed_gruop_name"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:background="@drawable/background_et"
+                android:hint="Group Name"
+                android:inputType="text"
+                android:lines="1"
+                android:maxLines="1"
+                android:paddingStart="@dimen/_20sdp"
+                android:textSize="@dimen/_14ssp"
+                android:paddingEnd="@dimen/_20sdp"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/ed_gruop_des"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="@drawable/background_et_multiline"
+                android:gravity="left|start"
+                android:hint="Description"
+                android:lines="5"
+                android:maxLines="5"
+                android:textSize="@dimen/_14ssp"
+                android:paddingStart="@dimen/_20sdp"
+                android:paddingTop="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_20sdp"
+                android:paddingBottom="@dimen/_10sdp" />
+
+
+            <RelativeLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/_50sdp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/background_et"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <EditText
+                    android:id="@+id/inputSearch"
+                    android:layout_width="fill_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:layout_centerVertical="true"
+                    android:background="@null"
+                    android:hint="Search...."
+                    android:inputType="textCapCharacters"
+                    android:paddingStart="@dimen/_20sdp"
+                    android:paddingTop="@dimen/_10sdp"
+                    android:paddingEnd="@dimen/_20sdp"
+                    android:paddingBottom="@dimen/_10sdp" />
+
+                <ImageView
+                    android:id="@+id/searchButton"
+                    android:layout_width="@dimen/_50sdp"
+                    android:layout_height="@dimen/_50sdp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:paddingEnd="@dimen/_10sdp"
+                    android:src="@drawable/ic_search" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="30dp"
+                android:background="@drawable/background_et_multiline"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="Show all members to send invitation"
+                    android:textSize="@dimen/_18ssp" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/bt_send_invitation"
+                    android:layout_width="200dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/b_roundshape"
+                    android:text="Create Group"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

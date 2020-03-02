@@ -16,6 +16,7 @@ import com.newiplquizgame.myipl.managers.SharedPreferenceManagerFile;
 import com.onesignal.OSNotification;
 import com.onesignal.OSNotificationAction;
 import com.onesignal.OSNotificationOpenResult;
+import com.onesignal.OSPermissionSubscriptionState;
 import com.onesignal.OneSignal;
 
 import org.json.JSONObject;
@@ -23,7 +24,7 @@ import org.json.JSONObject;
 import static com.newiplquizgame.myipl.managers.SharedPreferenceManagerFile.ISLOGIN;
 
 public class MyApp extends Application {
-    Boolean islogin = false;
+    Boolean islogin ;
     SharedPreferenceManagerFile sharedPref;
     Object activityToLaunch;
 
@@ -39,6 +40,9 @@ public class MyApp extends Application {
                 .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification)
                 .unsubscribeWhenNotificationsAreDisabled(true)
                 .init();
+
+        OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
+        sharedPref.setStringSharedPreference(SharedPreferenceManagerFile.ONESIGNAL_TOKeN, status.getSubscriptionStatus().getUserId());
         AppEventsLogger.activateApp(this);
     }
 
@@ -47,24 +51,21 @@ public class MyApp extends Application {
         public void notificationReceived(OSNotification notification) {
             JSONObject data = notification.payload.additionalData;
             String notificationID = notification.payload.notificationID;
-            String title = notification.payload.title;
-            String body = notification.payload.body;
-            String smallIcon = notification.payload.smallIcon;
-            String largeIcon = notification.payload.largeIcon;
-            String bigPicture = notification.payload.bigPicture;
-            String smallIconAccentColor = notification.payload.smallIconAccentColor;
-            String sound = notification.payload.sound;
-            String ledColor = notification.payload.ledColor;
-            int lockScreenVisibility = notification.payload.lockScreenVisibility;
-            String groupKey = notification.payload.groupKey;
-            String groupMessage = notification.payload.groupMessage;
-            String fromProjectNumber = notification.payload.fromProjectNumber;
-            String rawPayload = notification.payload.rawPayload;
-
+//            String title = notification.payload.title;
+//            String body = notification.payload.body;
+//            String smallIcon = notification.payload.smallIcon;
+//            String largeIcon = notification.payload.largeIcon;
+//            String bigPicture = notification.payload.bigPicture;
+//            String smallIconAccentColor = notification.payload.smallIconAccentColor;
+//            String sound = notification.payload.sound;
+//            String ledColor = notification.payload.ledColor;
+//            int lockScreenVisibility = notification.payload.lockScreenVisibility;
+//            String groupKey = notification.payload.groupKey;
+//            String groupMessage = notification.payload.groupMessage;
+//            String fromProjectNumber = notification.payload.fromProjectNumber;
+//            String rawPayload = notification.payload.rawPayload;
             String customKey;
-
             Log.i("OneSignalExample", "NotificationID received: " + notificationID);
-
             if (data != null) {
                 customKey = data.optString("customkey", null);
                 if (customKey != null)
@@ -74,46 +75,32 @@ public class MyApp extends Application {
     }
 
     private class ExampleNotificationOpenedHandler implements OneSignal.NotificationOpenedHandler {
-        // This fires when a notification is opened by tapping on it.
         @Override
         public void notificationOpened(OSNotificationOpenResult result) {
             OSNotificationAction.ActionType actionType = result.action.type;
             JSONObject data = result.notification.payload.additionalData;
-            String launchUrl = result.notification.payload.launchURL; // update docs launchUrl
-
-            String customKey;
-            String openURL = null;
             if (islogin == true) {
                 activityToLaunch = DashboardActivity.class;
             } else {
                 activityToLaunch = StartActivity.class;
             }
-
             if (data != null) {
-                customKey = data.optString("customkey", null);
-                openURL = data.optString("openURL", null);
-
-                if (customKey != null)
-                    Log.i("OneSignalExample", "customkey set with value: " + customKey);
-
-                if (openURL != null)
-                    Log.i("OneSignalExample", "openURL to webview with URL value: " + openURL);
+                Common.GROUP_NAME = data.optString("customkey", null);
+                Common.GROUP_NAME = data.optString("customkey", null);
+                if (data.optString("GROUP_NAME", null) != null)
+                    Common.GROUP_NAME = data.optString("GROUP_NAME", null);
+                if (data.optString("GROUP_DES", null) != null)
+                    Common.GROUP_DES = data.optString("GROUP_DES", null);
+                if (data.optString("GROUP_ID", null) != null)
+                    Common.GROUP_ID = Integer.valueOf(data.optString("GROUP_ID", null));
+                if (data.optString("GROUP_IMAGE_URL", null) != null)
+                    Common.GROUP_URL = data.optString("GROUP_IMAGE_URL", null);
             }
 
-            if (actionType == OSNotificationAction.ActionType.ActionTaken) {
-                Log.i("OneSignalExample", "Button pressed with id: " + result.action.actionID);
-
-                if (result.action.actionID.equals("id1")) {
-                    Log.i("OneSignalExample", "button id called: " + result.action.actionID);
-                    //  activityToLaunch = GreenActivity.class;
-                } else
-                    Log.i("OneSignalExample", "button id called: " + result.action.actionID);
-            }
             Intent intent = new Intent(getApplicationContext(), (Class<?>) activityToLaunch);
             // intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra("OPEN_FRAGMENT", 1);
-            Log.i("OneSignalExample", "openURL = " + openURL);
             startActivity(intent);
         }
     }

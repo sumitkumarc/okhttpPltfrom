@@ -53,7 +53,7 @@
         <item name="boxCornerRadiusBottomStart">5dp</item>
         <item name="boxCornerRadiusTopEnd">5dp</item>
         <item name="boxCornerRadiusTopStart">5dp</item>
-        <item name="android:layout_margin">5dp</item>
+        <item name="android:layout_marginBottom">2dp</item>
     </style>
 
     <style name="TextAppearance.AppTheme.TextInputLayout.HintTextAlt" parent="TextAppearance.MaterialComponents.Subtitle2">

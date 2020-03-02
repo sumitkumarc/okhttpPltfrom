@@ -1,11 +1,10 @@
 <resources>
-    <string name="app_name">My IPL Game</string>
+    <string name="app_name">CricTipp</string>
     <string name="facebook_app_id">922970454784135</string>
     <string name="fb_login_protocol_scheme">fb922970454784135</string>
-    <string name="title_activity_dashboard">My Groups</string>
-    <string name="title_home">Home</string>
+    <string name="title_home">CricTipp</string>
     <string name="title_prediction">Prediction</string>
-    <string name="title_group">My Group</string>
+    <string name="title_group">My Groups</string>
     <string name="title_profile">Your profile</string>
     <string name="title_log_out">Log out</string>
 

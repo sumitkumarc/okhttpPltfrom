@@ -5,15 +5,12 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -25,16 +22,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.facebook.login.LoginManager;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.Gson;
@@ -48,48 +47,48 @@ import com.newiplquizgame.myipl.fragment.MyProfileFragment;
 import com.newiplquizgame.myipl.managers.SharedPreferenceManagerFile;
 import com.newiplquizgame.myipl.managers.communications.APIcall;
 import com.newiplquizgame.myipl.pkg.GruopMaster;
-import com.onesignal.OSPermissionSubscriptionState;
-import com.onesignal.OneSignal;
+import com.newiplquizgame.myipl.pkg.UserFileUpload;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+
+import static com.newiplquizgame.myipl.extra.Common.getCompressed;
+import static com.newiplquizgame.myipl.managers.SharedPreferenceManagerFile.ISLOGINBYINT;
 
 public class DashboardActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, APIcall.ApiCallListner {
 
-    Toolbar mToolbar;
-    BottomNavigationView navView;
+    public  static  Toolbar mToolbar;
+  public  static BottomNavigationView navView;
     DrawerLayout drawer_layout;
     NavigationView nav_drawer;
     private SharedPreferenceManagerFile sharedPref;
-    GoogleSignInClient mGoogleSignInClient;
+
+    private GoogleApiClient mGoogleApiClient;
     GruopMaster gruopMaster;
     private ProgressDialog dialog;
-    Dialog mdialog;
+    private static final MediaType MEDIA_TYPE_PNG = MediaType.get("image/*");
     boolean doubleBackToExitPressedOnce = false;
     String image_path;
-    public static Integer SELECT_PICTURE = 2;
+    public static Integer SELECT_PICTURE = 101;
     CircleImageView iv_profile;
     String imageString;
     int OPEN_FRAGMENT_POS = 0;
+    UserFileUpload userFileUpload;
+    Dialog mdialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         sharedPref = new SharedPreferenceManagerFile(this);
+        Log.d("SUMITPATEL", "MAINURL" + sharedPref.getIntSharedPreference(ISLOGINBYINT));
         Common.checkAndRequestPermissions(DashboardActivity.this);
         findView();
         bindViewData();
@@ -97,30 +96,46 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     }
 
     private void bindViewData() {
-        OPEN_FRAGMENT_POS = getIntent().getIntExtra("OPEN_FRAGMENT", 0);
-        if (OPEN_FRAGMENT_POS == 0) {
-            redirectToHomeScreen();
-        } else {
-            redirectToMyGropsScreen();
-            showInvitationDialog();
-        }
 
-        navView.getMenu().findItem(R.id.navigation_home).setChecked(true);
-        mToolbar.setTitle(getResources().getString(R.string.title_home));
 
         findViewById(R.id.txt_Log_out).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 if (Common.isInternetAvailable(DashboardActivity.this)) {
-                    try {
-                        mGoogleSignInClient.signOut();
-                    } catch (Exception e) {
 
+                    switch(sharedPref.getIntSharedPreference(SharedPreferenceManagerFile.ISLOGINBYINT)){
+                        case 0:
+                            sharedPref.clearPreference();
+                            drawer_layout.closeDrawers();
+                            startActivity(new Intent(DashboardActivity.this, StartActivity.class));
+                            finish();
+                            break;
+                        case 1:
+                            sharedPref.clearPreference();
+                            LoginManager.getInstance().logOut();
+                            startActivity(new Intent(DashboardActivity.this, StartActivity.class));
+                            finish();
+                            break;
+                        case 2:
+                            sharedPref.clearPreference();
+                            try {
+                                Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                                mGoogleApiClient.disconnect();
+                                mGoogleApiClient.connect();
+
+                            } catch (Exception e) {
+
+                            }
+
+                            startActivity(new Intent(DashboardActivity.this, StartActivity.class));
+                            finish();
+                            break;
                     }
-                    sharedPref.clearPreference();
-                    drawer_layout.closeDrawers();
-                    startActivity(new Intent(DashboardActivity.this, StartActivity.class));
+
+
+
+
+
                 } else {
                     Common.displayToastMessageShort(DashboardActivity.this, "No connection found. Please connect & try again.", true);
                 }
@@ -139,16 +154,11 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                         redirectToMyGropsScreen();
                         break;
                     case R.id.navigation_Prediction:
-
                         redirectToAllMatchScreen();
-
                         break;
                     case R.id.navigation_Profile:
-
                         redirectToMyProfileScreen();
-
                         break;
-
                 }
                 return false;
             }
@@ -159,11 +169,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 drawer_layout.openDrawer(GravityCompat.START);
             }
         });
-
     }
 
     private void showInvitationDialog() {
-        Dialog mdialog;
+
         mdialog = new Dialog(this);
         mdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mdialog.setContentView(R.layout.invitation_to_join);
@@ -173,6 +182,18 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         lp.width = WindowManager.LayoutParams.MATCH_PARENT;
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         CircleImageView iv_profile = mdialog.findViewById(R.id.iv_profile);
+        try {
+            Glide.with(this).load(Common.GROUP_URL).error(R.drawable.logo).into(iv_profile);
+        } catch (Exception e) {
+
+        }
+        ImageButton bt_close = mdialog.findViewById(R.id.bt_close);
+        bt_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mdialog.dismiss();
+            }
+        });
         TextView ed_gruop_name = mdialog.findViewById(R.id.ed_gruop_name);
         Button bt_accept = mdialog.findViewById(R.id.bt_accept);
         Button bt_reject = mdialog.findViewById(R.id.bt_reject);
@@ -182,13 +203,13 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         bt_accept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callAPIInvitationGroup(Common.USER_ID, 1);
+                callAPIInvitationGroup(Common.GROUP_ID, 1);
             }
         });
         bt_reject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                callAPIInvitationGroup(Common.USER_ID, 2);
+                callAPIInvitationGroup(Common.GROUP_ID, 2);
             }
         });
         mdialog.show();
@@ -213,10 +234,8 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
 
     }
 
-
     private void findView() {
         navView = findViewById(R.id.nav_view);
-        navView.getMenu().findItem(R.id.navigation_home).setChecked(true);
         drawer_layout = findViewById(R.id.drawer_layout);
 
         nav_drawer = findViewById(R.id.nav_drawer);
@@ -225,35 +244,23 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mToolbar.setNavigationIcon(R.drawable.dr_menu);
+
+        OPEN_FRAGMENT_POS = getIntent().getIntExtra("OPEN_FRAGMENT", 0);
+        if (OPEN_FRAGMENT_POS == 0) {
+            redirectToHomeScreen();
+        } else {
+            redirectToMyGropsScreen();
+            showInvitationDialog();
+        }
+
+
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
-//            case R.id.navigation_log_out:
-//                if (Common.isInternetAvailable(DashboardActivity.this)) {
-//                    try {
-//                        mGoogleSignInClient.signOut();
-//                    } catch (Exception e) {
-//
-//                    }
-//                    sharedPref.clearPreference();
-//                    drawer_layout.closeDrawers();
-//                    startActivity(new Intent(DashboardActivity.this, StartActivity.class));
-//                } else {
-//                    Common.displayToastMessageShort(DashboardActivity.this, "No connection found. Please connect & try again.", true);
-//                }
-//                finish();
-            //break;
-
         }
         drawer_layout.closeDrawers();
-        return true;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_group_menu, menu);
         return true;
     }
 
@@ -261,17 +268,17 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_sign_out: {
-                showDialogCreatGroup(image_path);
+                showDialogCreatGroup();
                 break;
             }
         }
         return true;
     }
 
-    private void showDialogCreatGroup(final String image_path) {
-        mdialog = new Dialog(this);
+    private void showDialogCreatGroup() {
+        final Dialog mdialog = new Dialog(this);
         mdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mdialog.setContentView(R.layout.activity_group);
+        mdialog.setContentView(R.layout.pop_create_group);
         mdialog.setCancelable(true);
 
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
@@ -280,9 +287,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         iv_profile = mdialog.findViewById(R.id.iv_profile);
 
-        if (image_path != null) {
-            Glide.with(this).load(image_path).placeholder(R.drawable.login_back).into(iv_profile);
-        }
         ImageButton bt_close = mdialog.findViewById(R.id.bt_close);
         bt_close.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -316,21 +320,15 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                     Common.displayToastMessageShort(DashboardActivity.this, "Enter your description.", true);
                     return;
                 }
-
-                StringBuilder sb3 = new StringBuilder();
-                sb3.append(getPackageName());
-                sb3.append(".provider");
-                Uri str_uri = FileProvider.getUriForFile(DashboardActivity.this, sb3.toString(), new File(image_path));
                 try {
-                    InputStream imageStream = getContentResolver().openInputStream(str_uri);
-                    Bitmap bitmaps = BitmapFactory.decodeStream(imageStream);
-                    Common.encodeToBase64(bitmaps);
-                    imageString = Common.encodeToBase64(bitmaps);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
+                    if (image_path != null) {
+                        Glide.with(DashboardActivity.this).load(imageString).placeholder(R.drawable.logo).into(iv_profile);
+                    }
+                } catch (Exception e) {
+
                 }
                 callAPItoCreatGroup(ed_gruop_name.getText().toString(), ed_gruop_des.getText().toString(), imageString);
-                mdialog.dismiss();
+
             }
         });
         ((ImageButton) mdialog.findViewById(R.id.bt_close)).setOnClickListener(new View.OnClickListener() {
@@ -369,6 +367,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         if (operationCode == APIcall.OPERATION_GROUP_ACCEPT_REJECT) {
             showDialog();
         }
+        if (operationCode == APIcall.OPERATION_IMAGE_UPLOAD) {
+            showDialog();
+        }
+
     }
 
     @Override
@@ -384,7 +386,6 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 gruopMaster = gson.fromJson(response, GruopMaster.class);
                 if (gruopMaster.getStatus() == 0) {
                     Common.displayToastMessageShort(DashboardActivity.this, "" + Common.isempty(gruopMaster.getMsg()), true);
-                    this.mdialog.dismiss();
                     redirectToMyGropsScreen();
                     navView.getMenu().findItem(R.id.navigation_group).setChecked(true);
 
@@ -396,7 +397,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             if (operationCode == APIcall.OPERATION_GROUP_ACCEPT_REJECT) {
                 Gson gson = new Gson();
                 gruopMaster = gson.fromJson(response, GruopMaster.class);
-                if (gruopMaster.getStatus().equals("0")) {
+                if (gruopMaster.getStatus() == 0) {
                     mdialog.dismiss();
                     redirectToMyGropsScreen();
                     Common.displayToastMessageShort(this, "" + Common.isempty(gruopMaster.getMsg()), true);
@@ -405,10 +406,25 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
                 }
                 hideDialog();
             }
+            if (operationCode == APIcall.OPERATION_IMAGE_UPLOAD) {
+                Gson gson = new Gson();
+                userFileUpload = gson.fromJson(response, UserFileUpload.class);
+                if (userFileUpload.getStatus()) {
+                    imageString = userFileUpload.getFilePath();
+                    Glide.with(DashboardActivity.this).load(imageString).placeholder(R.drawable.logo).into(iv_profile);
+                    Log.d("SUMITPATEL", "UPLOAD_IMAGE_URL" + userFileUpload.getFilePath());
+                } else {
+                    Log.d("SUMITPATEL", "UPLOAD_IMAGE_URL Error" + userFileUpload.getMsg());
+                    Common.displayToastMessageShort(this, "" + Common.isempty(userFileUpload.getMsg()), true);
+                }
+                hideDialog();
+            }
         } catch (Exception e) {
             if (Common.isInternetAvailable(DashboardActivity.this)) {
                 try {
-                    mGoogleSignInClient.signOut();
+                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                    mGoogleApiClient.disconnect();
+                    mGoogleApiClient.connect();
                 } catch (Exception e1) {
 
                 }
@@ -419,13 +435,13 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
             } else {
                 Common.displayToastMessageShort(DashboardActivity.this, "No connection found. Please connect & try again.", true);
             }
+            hideDialog();
         }
     }
 
     @Override
     public void onFail(int operationCode, String response) {
 
-        Log.d("SUMITPATEL", "MAINURL" + response);
 
     }
 
@@ -461,12 +477,10 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         navView.getMenu().findItem(R.id.navigation_home).setChecked(true);
         mToolbar.setTitle(getResources().getString(R.string.title_home));
         mToolbar.getMenu().clear();
-        mToolbar.inflateMenu(R.menu.toolbar_group_menu);
         Fragment newFragment = new HomeFragment();
         Bundle b = new Bundle();
         newFragment.setArguments(b);
-        FragmentTransaction transaction = getSupportFragmentManager()
-                .beginTransaction();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.nav_host_fragment, newFragment);
         transaction.commit();
 
@@ -476,7 +490,7 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
     public void redirectToMyGropsScreen() {
         navView.getMenu().findItem(R.id.navigation_group).setChecked(true);
         mToolbar.getMenu().clear();
-        mToolbar.setTitle(getResources().getString(R.string.title_activity_dashboard));
+        mToolbar.setTitle(getResources().getString(R.string.title_group));
         mToolbar.inflateMenu(R.menu.toolbar_group_menu);
         Fragment newFragment = new MyGropsFragment();
         Bundle b = new Bundle();
@@ -514,22 +528,41 @@ public class DashboardActivity extends AppCompatActivity implements NavigationVi
         transaction.commit();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == SELECT_PICTURE) {
-                Uri selectedImageUri = data.getData();
-                image_path = getPath(selectedImageUri);
-                // Glide.with(this).load(image_path).placeholder(R.drawable.login_back).into(iv_profile);
-                //  iv_profile.setImageURI(Uri.parse(getPath(selectedImageUri)));
-                showDialogCreatGroup(image_path);
-                Log.d("SUMITPATEl", "MAINURL" + image_path);
+                try {
+                    Uri selectedImageUri = data.getData();
+                    image_path = "";
+                    image_path = getPath(selectedImageUri);
+                    getCompressed(DashboardActivity.this, image_path);
+                    File N_file = getCompressed(DashboardActivity.this, image_path);
+                    image_path = N_file.getPath();
+                    String file_name = new File(image_path).getName();
+                    callApiImageUpload(image_path, file_name, "GroupIcon");
+                } catch (Exception e) {
+                    Log.d("SUMITPATEL", "EROOR" + e.toString());
+                }
 
-//                tv.setText(selectedImagePath);
-//                img.setImageURI(selectedImageUri);
             }
         }
+    }
+
+    private void callApiImageUpload(String image_path, String file_name, String groupIcon) {
+        RequestBody body = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("UploadedFolder", groupIcon)
+                .addFormDataPart("UploadedImage", file_name,
+                        RequestBody.create(new File(image_path), MEDIA_TYPE_PNG))
+                .build();
+        String url = AppConstant.GET_USER_IMAGE_UPLOAD;
+        APIcall apIcall = new APIcall(getApplicationContext());
+        apIcall.isPost(true);
+        apIcall.setBody(body);
+        apIcall.execute(url, APIcall.OPERATION_IMAGE_UPLOAD, this);
+
     }
 
 

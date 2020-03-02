@@ -12,7 +12,11 @@ public class SharedPreferenceManagerFile {
     public static String USER_PROFILE_PIC = "UserProfilePic";
     public static String USER_NAME = "UserName";
     public static String EMAIL = "Email";
+    public static String USERID = "Userid";
     public static String ISLOGIN = "Login";
+    public static String ISLOGINBYINT = "LoginByInt";
+    public static String ONESIGNAL_TOKeN = "OnesignalToken";
+    public static String NICKNAME = "NickName";
     public static String GROUP_ID = "GroupId";
 
     public SharedPreferenceManagerFile(Context mContext) {
@@ -23,28 +27,48 @@ public class SharedPreferenceManagerFile {
         }
     }
 
-    public void setInSharedPreference(String fsKey, String fsValue) {
+    public void setStringSharedPreference(String fsKey, String fsValue) {
         if (moSharedPreferences != null && fsValue != null) {
             SharedPreferences.Editor loEditor = moSharedPreferences.edit();
             loEditor.putString(fsKey, fsValue);
             loEditor.commit();
+            loEditor.apply();
+        } else {
+            SharedPreferences.Editor loEditor = moSharedPreferences.edit();
+            loEditor.putString(fsKey, "");
+            loEditor.commit();
+            loEditor.apply();
         }
     }
 
     public void setBooleanSharedPreference(String fsKey, Boolean fsValue) {
         if (moSharedPreferences != null && fsValue != null) {
             SharedPreferences.Editor loEditor = moSharedPreferences.edit();
-            loEditor.putBoolean(fsKey, true);
+            loEditor.putBoolean(fsKey, fsValue);
             loEditor.commit();
+            loEditor.apply();
+        } else {
+            SharedPreferences.Editor loEditor = moSharedPreferences.edit();
+            loEditor.putBoolean(fsKey, false);
+            loEditor.commit();
+            loEditor.apply();
         }
     }
+
     public void setIntSharedPreference(String fsKey, Integer fsValue) {
         if (moSharedPreferences != null && fsValue != null) {
             SharedPreferences.Editor loEditor = moSharedPreferences.edit();
+            loEditor.putInt(fsKey, fsValue);
+            loEditor.commit();
+            loEditor.apply();
+        } else {
+            SharedPreferences.Editor loEditor = moSharedPreferences.edit();
             loEditor.putInt(fsKey, 0);
             loEditor.commit();
+            loEditor.apply();
         }
     }
+
     public Integer getIntSharedPreference(String fsKey) {
 
         if (moSharedPreferences != null) {
@@ -61,7 +85,7 @@ public class SharedPreferenceManagerFile {
         return null;
     }
 
-    public String getFromSharedPreference(String fsKey) {
+    public String getFromStringSharedPreference(String fsKey) {
 
         if (moSharedPreferences != null) {
             return moSharedPreferences.getString(fsKey, null);
@@ -76,8 +100,13 @@ public class SharedPreferenceManagerFile {
             loEditor.putString(EMAIL, "");
             loEditor.putString(SESSION_GUID, "");
             loEditor.putString(USER_PROFILE_PIC, "");
+            loEditor.putInt(ISLOGINBYINT, 0);
+            loEditor.putString(NICKNAME, "");
+            loEditor.putString(ONESIGNAL_TOKeN, "");
+            loEditor.putString(USERID, "");
             loEditor.putBoolean(ISLOGIN, false);
             loEditor.commit();
+            loEditor.apply();
         }
         return true;
     }

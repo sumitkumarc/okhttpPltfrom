@@ -5,7 +5,7 @@ buildscript {
         maven { url 'https://plugins.gradle.org/m2/' }
     }
     dependencies {
-        classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:[0.12.4, 0.99.99]'
+        classpath 'gradle.plugin.com.onesignal:onesignal-gradle-plugin:0.12.6'
     }
 }
 apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
@@ -23,11 +23,11 @@ android {
         targetSdkVersion 29
         versionCode 1
         versionName "1.1"
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         manifestPlaceholders = [
-                onesignal_app_id : 'e42a2e17-8e1c-4606-950a-aa2d3922dc49',
-                // Project number pulled from dashboard, local value is ignored.
+                onesignal_app_id               : '96cc6212-4a09-4446-b5d1-5b807a76dae4',
                 onesignal_google_project_number: 'REMOTE'
         ]
     }
@@ -36,6 +36,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 }
 
@@ -52,19 +56,26 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.google.firebase:firebase-auth:19.2.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
-// add the Firebase SDK for Google Analytics
-
+    implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'com.facebook.android:facebook-login:5.13.0'
 
     implementation 'me.relex:circleindicator:2.1.4'
 
     implementation 'com.squareup.okhttp3:okhttp:4.3.1'
+    implementation 'com.squareup.okhttp:okhttp:2.7.5'
+
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
-    implementation 'com.onesignal:OneSignal:[3.11.2, 3.99.99]'
+    implementation 'com.onesignal:OneSignal:3.12.6'
+    implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
 }
+apply plugin: 'com.google.gms.google-services'

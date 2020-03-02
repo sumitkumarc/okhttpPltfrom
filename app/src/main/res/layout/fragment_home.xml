@@ -42,7 +42,7 @@
                     android:paddingLeft="10.0dip"
                     android:paddingRight="10.0dip"
                     android:paddingBottom="5.0dip"
-                    android:text="FEATURED MATCHES"
+                    android:text="UPCOMING MATCHES"
                     android:textColor="@color/text_color_white"
                     android:textSize="15.0sp"
                     android:textStyle="bold" />
@@ -51,7 +51,7 @@
                 <androidx.viewpager.widget.ViewPager
                     android:id="@+id/pager"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_180sdp"
+                    android:layout_height="@dimen/_160sdp"
                     android:layout_alignParentTop="true"
                     android:clipToPadding="false"
                     android:paddingLeft="30dp"
@@ -123,7 +123,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right|center"
                     android:fontFamily="@font/montserrat"
-                    android:text="User Point Table"
+                    android:text="POINT TABLE"
                     android:paddingLeft="10.0dip"
                     android:paddingRight="10.0dip"
                     android:textColor="@color/text_color_white"
@@ -134,9 +134,8 @@
 
             <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="@dimen/_290sdp"
-                android:layout_marginBottom="5dp"
-                android:background="@drawable/home_user_rect"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_2sdp"
                 android:focusable="true"
                 android:focusableInTouchMode="true"
                 android:orientation="vertical">
@@ -145,8 +144,7 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:orientation="vertical"
-                    android:padding="@dimen/_10sdp">
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="fill_parent"
@@ -211,7 +209,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="Test 1"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -222,7 +220,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="7"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -233,7 +231,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="250"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -257,7 +255,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="Test 1"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -268,7 +266,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="7"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -279,7 +277,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="250"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -303,7 +301,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="Test 1"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -314,7 +312,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="7"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -325,7 +323,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="250"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -349,7 +347,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="Test 1"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -360,7 +358,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="7"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -371,7 +369,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="250"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -395,7 +393,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="Test 1"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -406,7 +404,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="7"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -417,7 +415,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="250"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -440,7 +438,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="Test 1"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -451,7 +449,7 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="7"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
@@ -462,12 +460,190 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/montserrat"
                             android:gravity="center"
-                            android:text="250"
+                            android:text="-----"
+                            android:textColor="@color/text_color_white"
+                            android:textSize="14.0sp" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_20sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginRight="@dimen/_20sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp">
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="-----"
+                            android:textColor="@color/text_color_white"
+                            android:textSize="14.0sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="-----"
+                            android:textColor="@color/text_color_white"
+                            android:textSize="14.0sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="-----"
+                            android:textColor="@color/text_color_white"
+                            android:textSize="14.0sp" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_20sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginRight="@dimen/_20sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp">
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="-----"
+                            android:textColor="@color/text_color_white"
+                            android:textSize="14.0sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="-----"
+                            android:textColor="@color/text_color_white"
+                            android:textSize="14.0sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="-----"
+                            android:textColor="@color/text_color_white"
+                            android:textSize="14.0sp" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_20sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginRight="@dimen/_20sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp">
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="-----"
+                            android:textColor="@color/text_color_white"
+                            android:textSize="14.0sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="-----"
+                            android:textColor="@color/text_color_white"
+                            android:textSize="14.0sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="-----"
+                            android:textColor="@color/text_color_white"
+                            android:textSize="14.0sp" />
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_20sdp"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:layout_marginRight="@dimen/_20sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp">
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="-----"
+                            android:textColor="@color/text_color_white"
+                            android:textSize="14.0sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="-----"
+                            android:textColor="@color/text_color_white"
+                            android:textSize="14.0sp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom|center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat"
+                            android:gravity="center"
+                            android:text="-----"
                             android:textColor="@color/text_color_white"
                             android:textSize="14.0sp" />
 
                     </LinearLayout>
                 </LinearLayout>
+
+
             </LinearLayout>
 
         </LinearLayout>

@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
@@ -44,8 +45,6 @@ public class MyGropsFragment extends Fragment implements APIcall.ApiCallListner,
     List<GroupDatum> mGroupData;
 
 
-
-
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_gruops, container, false);
         findViewHolder(root);
@@ -63,10 +62,7 @@ public class MyGropsFragment extends Fragment implements APIcall.ApiCallListner,
         recycler_view.setItemAnimator(new DefaultItemAnimator());
         this.swipeToRefresh = root.findViewById(R.id.swipeToRefresh);
         this.swipeToRefresh.setOnRefreshListener(this);
-        this.swipeToRefresh.setColorSchemeColors(getResources().getColor(R.color.text_color_white));
-        this.swipeToRefresh.setProgressBackgroundColor(R.color.colorAccent);
         recycler_view.setVisibility(View.GONE);
-        swipeToRefresh.setVisibility(View.GONE);
         ll_no_data.setVisibility(View.GONE);
         callAPIGroupList();
     }
@@ -104,18 +100,28 @@ public class MyGropsFragment extends Fragment implements APIcall.ApiCallListner,
                 if (mgruopMaster.getStatus() == 0) {
                     mGroupData = new ArrayList<>();
                     mGroupData = mgruopMaster.getData();
-
-//                    GroupDatum datum= new GroupDatum();
-//                    datum.setGroupName("Invite Gruop");
-//                    datum.setDescription("Demo For Invite Group");
-//                    datum.setIsActive(false);
-//                    mGroupData.add(0,datum);
-
                     recycler_view.setVisibility(View.VISIBLE);
-                    swipeToRefresh.setVisibility(View.VISIBLE);
                     ll_no_data.setVisibility(View.GONE);
+                    swipeToRefresh.setRefreshing(false);
                     groupListAdapter = new RVGroupListAdapter(activity, mGroupData);
                     recycler_view.setAdapter(groupListAdapter);
+                    recycler_view.getViewTreeObserver().addOnPreDrawListener(
+                            new ViewTreeObserver.OnPreDrawListener() {
+                                @Override
+                                public boolean onPreDraw() {
+                                    recycler_view.getViewTreeObserver().removeOnPreDrawListener(this);
+                                    for (int i = 0; i < recycler_view.getChildCount(); i++) {
+                                        View v = recycler_view.getChildAt(i);
+                                        v.setAlpha(0.0f);
+                                        v.animate().alpha(1.0f)
+                                                .setDuration(300)
+                                                .setStartDelay(i * 50)
+                                                .start();
+                                    }
+
+                                    return true;
+                                }
+                            });
                 } else {
                     recycler_view.setVisibility(View.GONE);
                     swipeToRefresh.setVisibility(View.GONE);
@@ -125,7 +131,8 @@ public class MyGropsFragment extends Fragment implements APIcall.ApiCallListner,
                 hideDialog();
             }
             hideDialog();
-        }catch (Exception e){
+        } catch (Exception e) {
+            hideDialog();
             recycler_view.setVisibility(View.GONE);
             swipeToRefresh.setVisibility(View.GONE);
             ll_no_data.setVisibility(View.VISIBLE);
@@ -135,13 +142,12 @@ public class MyGropsFragment extends Fragment implements APIcall.ApiCallListner,
 
     @Override
     public void onRefresh() {
+        swipeToRefresh.setRefreshing(true);
+        recycler_view.setVisibility(View.GONE);
+        ll_no_data.setVisibility(View.GONE);
         this.handler.postDelayed(new Runnable() {
             public void run() {
-                recycler_view.setVisibility(View.VISIBLE);
-                swipeToRefresh.setVisibility(View.VISIBLE);
-                ll_no_data.setVisibility(View.VISIBLE);
                 callAPIGroupList();
-                swipeToRefresh.setRefreshing(false);
             }
         }, 500);
     }
@@ -156,9 +162,6 @@ public class MyGropsFragment extends Fragment implements APIcall.ApiCallListner,
     @Override
     public void onFail(int operationCode, String response) {
         hideDialog();
-        recycler_view.setVisibility(View.GONE);
-        swipeToRefresh.setVisibility(View.GONE);
-        ll_no_data.setVisibility(View.VISIBLE);
     }
 
     @Override

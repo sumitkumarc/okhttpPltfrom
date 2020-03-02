@@ -1,27 +1,44 @@
 package com.newiplquizgame.myipl.activity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.Profile;
 import com.facebook.ProfileTracker;
+import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.Gson;
@@ -37,11 +54,14 @@ import com.onesignal.OneSignal;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import okhttp3.RequestBody;
 
 import static com.newiplquizgame.myipl.extra.Common.isempty;
+import static com.newiplquizgame.myipl.managers.SharedPreferenceManagerFile.ISLOGINBYINT;
 
 public class StartActivity extends AppCompatActivity implements APIcall.ApiCallListner {
 
@@ -52,7 +72,7 @@ public class StartActivity extends AppCompatActivity implements APIcall.ApiCallL
     private ProgressDialog dialog;
     Example example;
     private SharedPreferenceManagerFile sharedPref;
-
+    String onesignaltoken;
     // facebook Log in
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
@@ -62,11 +82,16 @@ public class StartActivity extends AppCompatActivity implements APIcall.ApiCallL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        checkPermission();
+
         sharedPref = new SharedPreferenceManagerFile(this);
+        onesignaltoken = sharedPref.getFromStringSharedPreference(SharedPreferenceManagerFile.ONESIGNAL_TOKeN);
+
         Common.checkAndRequestPermissions(StartActivity.this);
-       // ((ImageView) findViewById(R.id.iv_image)).setImageBitmap(Common.decodeBase64(s));
+        printHashKey(StartActivity.this);
 
         findViewBind();
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -83,51 +108,17 @@ public class StartActivity extends AppCompatActivity implements APIcall.ApiCallL
             }
         });
 
+
         FacebookSdk.sdkInitialize(this.getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         findViewById(R.id.btn_Facebook_login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OSPermissionSubscriptionState status = OneSignal.getPermissionSubscriptionState();
-                String userID = status.getSubscriptionStatus().getUserId();
-//                String userID = "2b9c5829-8099-497f-9546-2ca9f89c90e6";
-                boolean isSubscribed = status.getSubscriptionStatus().getSubscribed();
-
-             //   textView.setText("Subscription Status, is subscribed:" + isSubscribed);
-
-                if (!isSubscribed)
-                    return;
-
-                try {
-                    OneSignal.postNotification(new JSONObject("{'contents': {'en':'Tag substitution value for key1 = {{key1}}'}, " +
-                                    "'include_player_ids': ['" + userID + "'], " +
-                                    "'headings': {'en': 'Tag sub Title HI {{user_name}}'}, " +
-                                    "'data': {'openURL': 'https://imgur.com'}," +
-                                    "'buttons':[{'id': 'id1', 'text': ''}, {'id':'id2', 'text': 'Joint Group'}]}"),
-
-                            new OneSignal.PostNotificationResponseHandler() {
-                                @Override
-                                public void onSuccess(JSONObject response) {
-                                    Log.i("OneSignalExample", "postNotification Success: " + response);
-                                }
-
-                                @Override
-                                public void onFailure(JSONObject response) {
-                                    Log.e("OneSignalExample", "postNotification Failure: " + response);
-                                }
-                            });
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (Common.isInternetAvailable(StartActivity.this)) {
+                    LoginManager.getInstance().logInWithReadPermissions(StartActivity.this, Arrays.asList("public_profile", "user_friends"));
+                } else {
+                    Common.displayToastMessageShort(StartActivity.this, "No connection found. Please connect & try again.", true);
                 }
-
-
-
-//                if (Common.isInternetAvailable(StartActivity.this)) {
-//                    LoginManager.getInstance().logInWithReadPermissions(StartActivity.this, Arrays.asList("public_profile", "user_friends"));
-//                } else {
-//                    Common.displayToastMessageShort(StartActivity.this, "No connection found. Please connect & try again.", true);
-//                }
-
             }
         });
 
@@ -135,17 +126,28 @@ public class StartActivity extends AppCompatActivity implements APIcall.ApiCallL
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        Toast.makeText(StartActivity.this, "Login Success", Toast.LENGTH_LONG).show();
+                        if (AccessToken.getCurrentAccessToken() != null) { //error code  #155
+                            Profile profile = Profile.getCurrentProfile();
+                            if (profile != null) {
+                                String User_id = loginResult.getAccessToken().getUserId();
+                                String usertoken = loginResult.getAccessToken().getToken();
+                                String User_Fname = Profile.getCurrentProfile().getFirstName() + " " + Profile.getCurrentProfile().getMiddleName() + " " + Profile.getCurrentProfile().getLastName();
+                                String User_Profile = Profile.getCurrentProfile().getProfilePictureUri(500, 500).toString();
+                                callAPIFacebooktoLogin(User_id, User_Fname, User_Profile);
+                            }
+                        }
                     }
 
                     @Override
                     public void onCancel() {
-                        Toast.makeText(StartActivity.this, "Login Cancel", Toast.LENGTH_LONG).show();
+                        LoginManager.getInstance().logOut();
+                        LoginManager.getInstance().logInWithReadPermissions(StartActivity.this, Arrays.asList("public_profile", "user_friends"));
+
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
-                        Toast.makeText(StartActivity.this, exception.getMessage(), Toast.LENGTH_LONG).show();
+
                     }
                 });
 
@@ -157,6 +159,7 @@ public class StartActivity extends AppCompatActivity implements APIcall.ApiCallL
             @Override
             public void onClick(View v) {
                 if (Common.isInternetAvailable(StartActivity.this)) {
+
                     startActivity(new Intent(StartActivity.this, LoginActivity.class));
                 } else {
                     Common.displayToastMessageShort(StartActivity.this, "No connection found. Please connect & try again.", true);
@@ -179,7 +182,6 @@ public class StartActivity extends AppCompatActivity implements APIcall.ApiCallL
     @Override
     protected void onStart() {
         super.onStart();
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
     }
 
     private void signIn() {
@@ -189,8 +191,8 @@ public class StartActivity extends AppCompatActivity implements APIcall.ApiCallL
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
@@ -200,7 +202,6 @@ public class StartActivity extends AppCompatActivity implements APIcall.ApiCallL
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
             updateUI(account);
         } catch (ApiException e) {
             Log.w("signin", "signInResult:failed code=" + e.getStatusCode());
@@ -214,14 +215,13 @@ public class StartActivity extends AppCompatActivity implements APIcall.ApiCallL
             } catch (Exception e) {
                 photo_Image = "";
             }
-            callAPItoLogin(account, 2);
-            Log.d("SUMITPATEL", "ID" + account.getId());
+            callAPIGoogletoLogin(account);
 
 
         }
     }
 
-    private void callAPItoLogin(GoogleSignInAccount account, int loginType) {
+    private void callAPIGoogletoLogin(GoogleSignInAccount account) {
         Common.hideKeyboard(StartActivity.this);
         JSONObject jsonObject = new JSONObject();
         try {
@@ -230,6 +230,27 @@ public class StartActivity extends AppCompatActivity implements APIcall.ApiCallL
             jsonObject.put("DisplayName", isempty(account.getDisplayName().toString()));
             jsonObject.put("TokenId", isempty(account.getId().toString()));
             jsonObject.put("LoginType", "2");
+            jsonObject.put("OneSignalToken", onesignaltoken);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        RequestBody body = RequestBody.create(APIcall.JSON, jsonObject + "");
+        String url2 = AppConstant.GET_LOGIN;
+        APIcall apIcall = new APIcall(getApplicationContext());
+        apIcall.isPost(true);
+        apIcall.setBody(body);
+        apIcall.execute(url2, APIcall.OPERATION_LOGIN, (APIcall.ApiCallListner) StartActivity.this);
+    }
+
+    private void callAPIFacebooktoLogin(String user_id, String user_Fname, String user_Profile) {
+        Common.hideKeyboard(StartActivity.this);
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("ProfilePic", isempty(user_Profile));
+            jsonObject.put("DisplayName", isempty(user_Fname));
+            jsonObject.put("TokenId", isempty(user_id));
+            jsonObject.put("LoginType", "1");
+            jsonObject.put("OneSignalToken", onesignaltoken);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -255,29 +276,36 @@ public class StartActivity extends AppCompatActivity implements APIcall.ApiCallL
 
     @Override
     public void onSuccess(int operationCode, String response, Object customData) {
-        if (operationCode == APIcall.OPERATION_LOGIN) {
-            Log.i("onSuccess", "" + response);
-            Gson gson = new Gson();
-            example = gson.fromJson(response, Example.class);
-            if (example.getAccessToken() != null) {
-                sharedPref.setInSharedPreference(SharedPreferenceManagerFile.SESSION_GUID, isempty(example.getTokenType()) + " " + isempty(example.getAccessToken()));
-                sharedPref.setBooleanSharedPreference(SharedPreferenceManagerFile.ISLOGIN, true);
-                sharedPref.setInSharedPreference(SharedPreferenceManagerFile.EMAIL, isempty(example.getUser().getEmail()));
-                sharedPref.setInSharedPreference(SharedPreferenceManagerFile.USER_NAME, isempty(example.getUser().getDisplayName()));
-                sharedPref.setInSharedPreference(SharedPreferenceManagerFile.USER_PROFILE_PIC, isempty(example.getUser().getPhoto()));
-                Intent intent = new Intent(StartActivity.this, DashboardActivity.class);
-                startActivity(intent);
-                Common.displayToastMessageShort(StartActivity.this, "Successful login", true);
-            } else {
-                try {
-                    JSONObject json = new JSONObject(response);
-                    String json_LL = json.getString("invalid_grant");
-                    Log.i("SUMIT_PATEL", "GET_LOGIN" + json_LL);
-                    Toast.makeText(this, "" + json_LL, Toast.LENGTH_LONG).show();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        try {
+            if (operationCode == APIcall.OPERATION_LOGIN) {
+                Log.i("onSuccess", "" + response);
+                Gson gson = new Gson();
+                example = gson.fromJson(response, Example.class);
+                if (example.getAccessToken() != null) {
+                    sharedPref.setStringSharedPreference(SharedPreferenceManagerFile.SESSION_GUID, isempty(example.getTokenType()) + " " + isempty(example.getAccessToken()));
+                    sharedPref.setBooleanSharedPreference(SharedPreferenceManagerFile.ISLOGIN, true);
+                    sharedPref.setStringSharedPreference(SharedPreferenceManagerFile.NICKNAME, "Your Nick Name");
+                    sharedPref.setIntSharedPreference(SharedPreferenceManagerFile.ISLOGINBYINT, example.getUser().getLoginType());
+                    sharedPref.setIntSharedPreference(SharedPreferenceManagerFile.USERID, example.getUser().getUserId());
+                    sharedPref.setStringSharedPreference(SharedPreferenceManagerFile.EMAIL, isempty(example.getUser().getEmail()));
+                    sharedPref.setStringSharedPreference(SharedPreferenceManagerFile.USER_NAME, isempty(example.getUser().getDisplayName()));
+                    sharedPref.setStringSharedPreference(SharedPreferenceManagerFile.USER_PROFILE_PIC, isempty(example.getUser().getPhoto()));
+                    Intent intent = new Intent(StartActivity.this, DashboardActivity.class);
+                    startActivity(intent);
+                    Common.displayToastMessageShort(StartActivity.this, "Successful login", true);
+                } else {
+                    try {
+                        JSONObject json = new JSONObject(response);
+                        String json_LL = json.getString("invalid_grant");
+                        Log.i("SUMIT_PATEL", "GET_LOGIN" + json_LL);
+                        Toast.makeText(this, "" + json_LL, Toast.LENGTH_LONG).show();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+        } catch (Exception e) {
+
         }
         hideDialog();
     }
@@ -297,6 +325,31 @@ public class StartActivity extends AppCompatActivity implements APIcall.ApiCallL
     private void hideDialog() {
         if (dialog != null && dialog.isShowing())
             dialog.dismiss();
+    }
+
+    public static void printHashKey(Context pContext) {
+        try {
+            PackageInfo info = pContext.getPackageManager().getPackageInfo(pContext.getPackageName(), PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                String hashKey = new String(Base64.encode(md.digest(), 0));
+                Log.i("SUMITPATEL", "printHashKey() Hash Key: " + hashKey);
+            }
+        } catch (NoSuchAlgorithmException e) {
+            //   Log.e(TAG, "printHashKey()", e);
+        } catch (Exception e) {
+            //     Log.e(TAG, "printHashKey()", e);
+        }
+    }
+
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(StartActivity.this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (result == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

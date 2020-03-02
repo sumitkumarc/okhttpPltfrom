@@ -1,6 +1,6 @@
 package com.newiplquizgame.myipl.recyclerview_adapter;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,22 +11,26 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.newiplquizgame.myipl.R;
-import com.newiplquizgame.myipl.activity.NewAllUserActivity;
+import com.newiplquizgame.myipl.activity.MyGroupInfoActivity;
 import com.newiplquizgame.myipl.extra.Common;
 import com.newiplquizgame.myipl.pkg.GroupDatum;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class RVGroupUserListAdapter extends RecyclerView.Adapter {
-    NewAllUserActivity mallUserActivity;
+    Context mallUserActivity;
     private List<GroupDatum> kgroupData;
     public static List<GroupDatum> mFilteredkgroupData;
 
-    public RVGroupUserListAdapter(NewAllUserActivity allUserActivity, List<GroupDatum> mGroupData) {
+    public RVGroupUserListAdapter(FragmentActivity allUserActivity, List<GroupDatum> mGroupData) {
         this.mallUserActivity = allUserActivity;
         this.kgroupData = mGroupData;
         this.mFilteredkgroupData = mGroupData;
@@ -36,11 +40,13 @@ public class RVGroupUserListAdapter extends RecyclerView.Adapter {
     public class MyViewHolder extends RecyclerView.ViewHolder {
         Button bt_action;
         TextView txt_title;
+        CircleImageView iv_profile;
 
         public MyViewHolder(View view) {
             super(view);
             this.bt_action = view.findViewById(R.id.bt_action);
             this.txt_title = view.findViewById(R.id.txt_title);
+            this.iv_profile = view.findViewById(R.id.iv_profile);
 
         }
     }
@@ -58,8 +64,10 @@ public class RVGroupUserListAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         final MyViewHolder myViewHolder = ((MyViewHolder) holder);
         myViewHolder.txt_title.setText("" + Common.isempty(mFilteredkgroupData.get(position).getFirstName()));
-
-
+        try {
+            Glide.with(mallUserActivity).load(Common.isempty(mFilteredkgroupData.get(position).getPPhoto())).error(R.drawable.logo).into(myViewHolder.iv_profile);
+        } catch (Exception e) {
+        }
         if (mFilteredkgroupData.get(position).getIsApproved() == 0) {
             myViewHolder.bt_action.setText("Padding");
             myViewHolder.bt_action.setBackground(mallUserActivity.getDrawable(R.drawable.bt_bg_invite));
@@ -82,7 +90,7 @@ public class RVGroupUserListAdapter extends RecyclerView.Adapter {
             public void onClick(View v) {
                 if (mFilteredkgroupData.get(position).getIsApproved() == 2) {
                     int USER_ID = mFilteredkgroupData.get(position).getUserId();
-                    mallUserActivity.showSendInvitation(USER_ID);
+                    // showSendInvitation(USER_ID,mFilteredkgroupData.get(position).getOneSignalToken());
                 }
             }
         });

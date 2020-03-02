@@ -316,9 +316,7 @@ public class StartexamActivity extends AppCompatActivity implements APIcall.ApiC
         if (operationCode == APIcall.OPERATION_ALL_QUESTION) {
             Gson gson = new Gson();
             queGruopMaster = gson.fromJson(response, GruopMaster.class);
-            if (queGruopMaster.getData().size() == 0) {
-                Common.displayToastMessageShort(this, "" + Common.isempty(queGruopMaster.getMsg()), true);
-            } else {
+            if (queGruopMaster.getStatus() == 0) {
                 queGroupData = new ArrayList<>();
                 queGroupData = queGruopMaster.getData();
                 rl_main.setVisibility(View.VISIBLE);
@@ -332,6 +330,9 @@ public class StartexamActivity extends AppCompatActivity implements APIcall.ApiC
                 }
                 Showqustion_ans(start_pos);
                 showTextBoxData();
+
+            } else {
+                Common.displayToastMessageShort(this, "" + Common.isempty(queGruopMaster.getMsg()), true);
             }
         }
         hideDialog();

@@ -22,6 +22,27 @@ public class UserMaster {
     @SerializedName("DOB")
     @Expose
     private Object dOB;
+    @SerializedName("NickName")
+    @Expose
+    private String nickName;
+    @SerializedName("LoginType")
+    @Expose
+    private Integer loginType;
+
+    public Integer getLoginType() {
+        return loginType;
+    }
+
+    public void setLoginType(Integer loginType) {
+        this.loginType = loginType;
+    }
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
 
     public Integer getUserId() {
         return userId;

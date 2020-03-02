@@ -34,7 +34,7 @@ public class SplashActivity extends AppCompatActivity {
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                if (islogin == true) {
+                if (islogin) {
                     Intent intent = new Intent(SplashActivity.this, DashboardActivity.class);
                     intent.putExtra("OPEN_FRAGMENT", 0);
                     startActivity(intent);

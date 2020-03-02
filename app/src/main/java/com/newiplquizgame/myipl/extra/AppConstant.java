@@ -12,6 +12,7 @@ public class AppConstant {
 
     public static final String GET_LOGIN = BASE_URL + "Authentication/Login";
     public static final String GET_SING_UP = BASE_URL + "Authentication/Register";
+    public static final String GET_UPDATE_PROFILE = BASE_URL + "Authentication/editprofile";
 
     public static final String GET_GROUP_LIST = BASE_URL + "GetGroupList";
     public static final String GET_GROUP_CREATE = BASE_URL + "ManageGroup";
@@ -24,5 +25,7 @@ public class AppConstant {
     public static final String GET_TOURNAMENT = BASE_URL + "gettournament";
     public static final String GET_VIDEO = BASE_URL + "getvideo";
     public static final String GET_ACCEPT_REJECT = BASE_URL + "confirmmember";
+    public static final String GET_USER_IMAGE_UPLOAD = BASE_URL + "PostFileUpload";
+
 
 }

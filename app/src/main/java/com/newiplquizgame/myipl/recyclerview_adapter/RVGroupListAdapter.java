@@ -4,12 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
+import android.os.Build;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -21,20 +17,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.appcompat.view.menu.MenuPopupHelper;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.newiplquizgame.myipl.R;
-import com.newiplquizgame.myipl.activity.AllUserActivity;
 import com.newiplquizgame.myipl.activity.DashboardActivity;
-import com.newiplquizgame.myipl.activity.NewAllUserActivity;
-import com.newiplquizgame.myipl.activity.SingleGroupActivity;
+import com.newiplquizgame.myipl.activity.MyGroupInfoActivity;
 import com.newiplquizgame.myipl.extra.AppConstant;
 import com.newiplquizgame.myipl.extra.Common;
 import com.newiplquizgame.myipl.fragment.MyGropsFragment;
@@ -46,7 +36,6 @@ import com.newiplquizgame.myipl.pkg.UserGroupMaster;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,10 +69,10 @@ public class RVGroupListAdapter extends RecyclerView.Adapter implements APIcall.
 
         public MyViewHolder(View view) {
             super(view);
-            this.bt_pop_menu = view.findViewById(R.id.bt_pop_menu);
+//            this.bt_pop_menu = view.findViewById(R.id.bt_pop_menu);
             this.txt_title = view.findViewById(R.id.txt_title);
             this.txt_des = view.findViewById(R.id.txt_des);
-            this.txt_invite = view.findViewById(R.id.txt_invite);
+//            this.txt_invite = view.findViewById(R.id.txt_invite);
             this.iv_profile = view.findViewById(R.id.iv_profile);
         }
     }
@@ -102,88 +91,94 @@ public class RVGroupListAdapter extends RecyclerView.Adapter implements APIcall.
         final MyViewHolder myViewHolder = ((MyViewHolder) holder);
         myViewHolder.txt_title.setText("" + Common.isempty(mGroupData.get(position).getGroupName()));
         myViewHolder.txt_des.setText("" + Common.isempty(mGroupData.get(position).getDescription()));
-        myViewHolder.iv_profile.setImageBitmap(Common.decodeBase64(Common.isempty(mGroupData.get(position).getIcon())));
+        try {
+            Glide.with(mactivity).load(Common.isempty(mGroupData.get(position).getIcon())).placeholder(R.drawable.logo).into(myViewHolder.iv_profile);
+        } catch (Exception e) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                myViewHolder.iv_profile.setImageDrawable(mactivity.getDrawable(R.drawable.logo));
+            }
+        }
         myViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int G_id = mGroupData.get(position).getGroupId();
-                Common.GROUP_ID = G_id;
+                Common.GROUP_ID = mGroupData.get(position).getGroupId();
                 Common.GROUP_ADMIN = mGroupData.get(position).getIsAdmin();
                 Common.USER_ID = mGroupData.get(position).getGroupUserId();
                 Common.GROUP_DES = mGroupData.get(position).getDescription();
                 Common.GROUP_URL = mGroupData.get(position).getIcon();
                 Common.GROUP_NAME = mGroupData.get(position).getGroupName();
-                Intent N_intent = new Intent(mactivity, NewAllUserActivity.class);
+                Intent N_intent = new Intent(mactivity, MyGroupInfoActivity.class);
                 mactivity.startActivity(N_intent);
             }
         });
-        if (mGroupData.get(position).getIsActive() == true) {
-            myViewHolder.bt_pop_menu.setVisibility(View.VISIBLE);
-            myViewHolder.txt_invite.setVisibility(View.GONE);
-            myViewHolder.bt_pop_menu.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    MenuBuilder menuBuilder = new MenuBuilder(mactivity);
-                    MenuInflater inflater = new MenuInflater(mactivity);
-                    inflater.inflate(R.menu.group_poupup_menu, menuBuilder);
-                    MenuPopupHelper optionsMenu = new MenuPopupHelper(mactivity, menuBuilder, v);
-                    optionsMenu.setForceShowIcon(true);
-                    menuBuilder.setCallback(new MenuBuilder.Callback() {
-                        int G_id = mGroupData.get(position).getGroupId();
-
-                        @Override
-                        public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.pop_leave_group:
-                                    Common.GROUP_ID = G_id;
-                                    Common.GROUP_DES = mGroupData.get(position).getDescription();
-                                    Common.GROUP_NAME = mGroupData.get(position).getGroupName();
-                                    ShowLeaveGroupDialog();
-                                    return true;
-                                case R.id.pop_edit_group:
-                                    Common.GROUP_ID = G_id;
-                                    Common.GROUP_DES = mGroupData.get(position).getDescription();
-                                    Common.GROUP_NAME = mGroupData.get(position).getGroupName();
-                                    showDialogCreatGroup();
-
-                                    return true;
-                                case R.id.pop_all_member:
-                                    Common.GROUP_ID = G_id;
-                                    Intent N_intent = new Intent(mactivity, AllUserActivity.class);
-                                    mactivity.startActivity(N_intent);
-                                    return true;
-                                case R.id.pop_point_table:
-                                    Common.GROUP_ID = G_id;
-                                    Common.GROUP_NAME = mGroupData.get(position).getGroupName();
-                                    Intent P_T_intent = new Intent(mactivity, SingleGroupActivity.class);
-                                    mactivity.startActivity(P_T_intent);
-                                    return true;
-
-                                default:
-                                    return false;
-                            }
-                        }
-
-                        @Override
-                        public void onMenuModeChange(MenuBuilder menu) {
-                        }
-                    });
-                    optionsMenu.show();
-                }
-            });
-        } else {
-            myViewHolder.bt_pop_menu.setVisibility(View.GONE);
-            myViewHolder.txt_invite.setVisibility(View.VISIBLE);
-            myViewHolder.txt_invite.setText("Accept");
-            myViewHolder.txt_invite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Common.GROUP_DES = mGroupData.get(position).getDescription();
-                    Common.GROUP_NAME = mGroupData.get(position).getGroupName();
-                    showAcceptRequestDialog();
-                }
-            });
-        }
+//        if (mGroupData.get(position).getIsActive() == true) {
+//            myViewHolder.bt_pop_menu.setVisibility(View.VISIBLE);
+//            myViewHolder.txt_invite.setVisibility(View.GONE);
+//            myViewHolder.bt_pop_menu.setVisibility(View.GONE);
+//            myViewHolder.bt_pop_menu.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    MenuBuilder menuBuilder = new MenuBuilder(mactivity);
+//                    MenuInflater inflater = new MenuInflater(mactivity);
+//                    inflater.inflate(R.menu.group_poupup_menu, menuBuilder);
+//                    MenuPopupHelper optionsMenu = new MenuPopupHelper(mactivity, menuBuilder, v);
+//                    optionsMenu.setForceShowIcon(true);
+//                    menuBuilder.setCallback(new MenuBuilder.Callback() {
+//                        int G_id = mGroupData.get(position).getGroupId();
+//
+//                        @Override
+//                        public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+//                            switch (item.getItemId()) {
+//                                case R.id.pop_leave_group:
+//                                    Common.GROUP_ID = G_id;
+//                                    Common.GROUP_DES = mGroupData.get(position).getDescription();
+//                                    Common.GROUP_NAME = mGroupData.get(position).getGroupName();
+//                                    //    ShowLeaveGroupDialog();
+//                                    return true;
+//                                case R.id.pop_edit_group:
+//                                    Common.GROUP_ID = G_id;
+//                                    Common.GROUP_DES = mGroupData.get(position).getDescription();
+//                                    Common.GROUP_NAME = mGroupData.get(position).getGroupName();
+//                                    showDialogCreatGroup();
+//
+//                                    return true;
+//                                case R.id.pop_all_member:
+//                                    Common.GROUP_ID = G_id;
+//                                    Intent N_intent = new Intent(mactivity, NewAllUserActivity.class);
+//                                    mactivity.startActivity(N_intent);
+//                                    return true;
+//                                case R.id.pop_point_table:
+//                                    Common.GROUP_ID = G_id;
+//                                    Common.GROUP_NAME = mGroupData.get(position).getGroupName();
+//                                    Intent P_T_intent = new Intent(mactivity, SingleGroupActivity.class);
+//                                    mactivity.startActivity(P_T_intent);
+//                                    return true;
+//
+//                                default:
+//                                    return false;
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onMenuModeChange(MenuBuilder menu) {
+//                        }
+//                    });
+//                    optionsMenu.show();
+//                }
+//            });
+//        } else {
+//            myViewHolder.bt_pop_menu.setVisibility(View.GONE);
+//            myViewHolder.txt_invite.setVisibility(View.VISIBLE);
+//            myViewHolder.txt_invite.setText("Accept");
+//            myViewHolder.txt_invite.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Common.GROUP_DES = mGroupData.get(position).getDescription();
+//                    Common.GROUP_NAME = mGroupData.get(position).getGroupName();
+//                    showAcceptRequestDialog();
+//                }
+//            });
+//        }
 
 
     }
@@ -209,37 +204,37 @@ public class RVGroupListAdapter extends RecyclerView.Adapter implements APIcall.
         mdialog.getWindow().setAttributes(lp);
     }
 
-    private void ShowLeaveGroupDialog() {
-        final Dialog mdialog = new Dialog(mactivity);
-        mdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mdialog.setContentView(R.layout.leave_and_congratulation);
-        mdialog.setCancelable(true);
-
-        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-        lp.copyFrom(mdialog.getWindow().getAttributes());
-        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-
-        ((TextView) mdialog.findViewById(R.id.txt_title)).setText(Common.GROUP_NAME);
-        ((TextView) mdialog.findViewById(R.id.txt_des)).setText(Common.GROUP_DES);
-
-
-        d_recycler_view = mdialog.findViewById(R.id.recycler_view);
-
-        LinearLayoutManager gridLayoutManager = new LinearLayoutManager(mactivity);
-        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        d_recycler_view.setLayoutManager(gridLayoutManager);
-        d_recycler_view.setItemAnimator(new DefaultItemAnimator());
-        callAPIGroupUserList();
-        ((ImageButton) mdialog.findViewById(R.id.bt_close)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mdialog.dismiss();
-            }
-        });
-        mdialog.show();
-        mdialog.getWindow().setAttributes(lp);
-    }
+//    private void ShowLeaveGroupDialog() {
+//        final Dialog mdialog = new Dialog(mactivity);
+//        mdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        mdialog.setContentView(R.layout.leave_and_congratulation);
+//        mdialog.setCancelable(true);
+//
+//        WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+//        lp.copyFrom(mdialog.getWindow().getAttributes());
+//        lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+//        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+//
+//        ((TextView) mdialog.findViewById(R.id.txt_title)).setText(Common.GROUP_NAME);
+//        ((TextView) mdialog.findViewById(R.id.txt_des)).setText(Common.GROUP_DES);
+//
+//
+//        d_recycler_view = mdialog.findViewById(R.id.recycler_view);
+//
+//        LinearLayoutManager gridLayoutManager = new LinearLayoutManager(mactivity);
+//        gridLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//        d_recycler_view.setLayoutManager(gridLayoutManager);
+//        d_recycler_view.setItemAnimator(new DefaultItemAnimator());
+//        callAPIGroupUserList();
+//        ((ImageButton) mdialog.findViewById(R.id.bt_close)).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                mdialog.dismiss();
+//            }
+//        });
+//        mdialog.show();
+//        mdialog.getWindow().setAttributes(lp);
+//    }
 
     private void callAPIGroupUserList() {
         JSONObject jsonObject = new JSONObject();
@@ -259,7 +254,7 @@ public class RVGroupListAdapter extends RecyclerView.Adapter implements APIcall.
     private void showDialogCreatGroup() {
         mdialog = new Dialog(mactivity);
         mdialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mdialog.setContentView(R.layout.activity_group);
+        mdialog.setContentView(R.layout.pop_create_group);
         mdialog.setCancelable(true);
 
         WindowManager.LayoutParams lp = new WindowManager.LayoutParams();

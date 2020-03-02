@@ -159,6 +159,28 @@ public class GroupDatum {
     @SerializedName("Mobile")
     @Expose
     private String mobile;
+    @SerializedName("OneSignalToken")
+    @Expose
+    private String oneSignalToken;
+    @SerializedName("PPhoto")
+    @Expose
+    private String pPhoto;
+
+    public String getPPhoto() {
+        return pPhoto;
+    }
+
+    public void setPPhoto(String pPhoto) {
+        this.pPhoto = pPhoto;
+    }
+
+    public String getOneSignalToken() {
+        return oneSignalToken;
+    }
+
+    public void setOneSignalToken(String oneSignalToken) {
+        this.oneSignalToken = oneSignalToken;
+    }
 
     public Integer getUserId() {
         return userId;

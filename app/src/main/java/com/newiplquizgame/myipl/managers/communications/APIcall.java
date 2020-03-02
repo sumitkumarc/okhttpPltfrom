@@ -33,21 +33,10 @@ public class APIcall {
     public static int OPERATION_ALL_TOURNAMENT= 100010;
     public static int OPERATION_LEAVEGROUP= 100011;
     public static int OPERATION_GROUP_ACCEPT_REJECT= 100012;
+    public static int OPERATION_IMAGE_UPLOAD= 100013;
+    public static int OPERATION_UPDATE_PROFILE= 100014;
 
  //   public static int OPERATION_ID_GET_AVAILABLE_FLIGHT = 100002;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public static final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
@@ -59,7 +48,7 @@ public class APIcall {
     public APIcall(Context context) {
         moContext = context;
     }
-
+    SharedPreferenceManagerFile sharedPreferenceManagerFile;
     private boolean isPost;
 
     private RequestBody body;
@@ -118,80 +107,61 @@ public class APIcall {
 
         @Override
         protected void onPreExecute() {
-
         }
-
         @Override
         protected String doInBackground(String... params) {
-            if (!url.contains("http")) {
-                url = AppConstant.BASE_URL + url;
-            }
-            SharedPreferenceManagerFile sharedPreferenceManagerFile = new SharedPreferenceManagerFile(moContext);
-            String userAgent = System.getProperty("http.agent");
-            Log.i("userAgent", "userAgent:::" + userAgent);
-
-            OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();
-            okHttpBuilder.connectTimeout(60000, TimeUnit.MILLISECONDS);
-            okHttpBuilder.readTimeout(60000, TimeUnit.MILLISECONDS);
-            OkHttpClient client = okHttpBuilder.build();//new OkHttpClient(okHttpBuilder);
-        //    String token = sharedPreferenceManagerFile.getFromSharedPreference(SharedPreferenceManagerFile.GCM_TOKEN);
-//            if(Common.isEmpty(token)){
-//                token = "simulator";
-//            }
-
-            FormBody formBody = null;
-            Request request;
-            if (isPost && postBuilder != null) {
-                //FormBody.Builder builder = new FormBody.Builder();
-           //     postBuilder.add(AppConstant.REQUEST_DEVICE_TYPE, "A");
-               // postBuilder.add(AppConstant.REQUEST_DEVICE_TOKEN, token);
-             //   formBody = postBuilder.build();
-                Log.i("CallApiExecute", "API Url:" + url);
-            }
-            //client.networkInterceptors().add(new UserAgentInterceptor("fPrLeimKr0uF3"));
-            Request.Builder reqBuilder = new Request.Builder();
-            String sessionGUID = sharedPreferenceManagerFile.getFromSharedPreference(SharedPreferenceManagerFile.SESSION_GUID);
-            Log.e("sessionGUID", "" + sessionGUID);
-            if (!Common.isEmpty(sessionGUID)) {
-                reqBuilder.addHeader(AppConstant.REQUEST_HEADER_TOKEN, sessionGUID);
-            } else if (!Common.isEmpty(tempSessionGUID)) {
-                reqBuilder.addHeader(AppConstant.REQUEST_HEADER_TOKEN, tempSessionGUID);
-            }
-            if (formBody != null) {
-                if (false && !TextUtils.isEmpty(sessionGUID)) {
-                    /*request = new Request.Builder().addHeader(AppConstant.REQUEST_HEADER_TOKEN, sessionGUID)
-                            .url(url).post(formBody)
-                            .build();*/
-                } else {
-                    request = reqBuilder.url(url).post(formBody)
-                            .build();
-                }
-            } else if (body != null) {
-             //   RequestBody body = RequestBody.create(JSON, json);
-                request = reqBuilder.url(url).post(body).build();
-            } else {
-//                String otherParams = AppConstant.REQUEST_DEVICE_TYPE + "=A&" + AppConstant.REQUEST_DEVICE_TOKEN + "="+token;
-//                if (!url.contains(AppConstant.REQUEST_DEVICE_TYPE)) {
-//                    if (url.contains("?")) {
-//                        url = url + "&" + otherParams;
-//                    } else {
-//                        url = url + "?" + otherParams;
-//                    }
-//                }
-                request = reqBuilder.url(url).build();
-            }
-            Response response = null;
-            String responseStr = null;
             try {
-                response = client.newCall(request).execute();
-                responseStr = response.body().string();
-                Log.i("CallApiExecute", "CallApiExecute Response got:" + responseStr);
-                return responseStr;
-            } catch (IOException e) {
-                Log.i("CallApiExecute", "Exception Message:" + e.getMessage());
-                e.printStackTrace();
+                if (!url.contains("http")) {
+                    url = AppConstant.BASE_URL + url;
+                }
+                sharedPreferenceManagerFile = new SharedPreferenceManagerFile(moContext);
+                String userAgent = System.getProperty("http.agent");
+                Log.i("userAgent", "userAgent:::" + userAgent);
+                OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();
+                okHttpBuilder.connectTimeout(60000, TimeUnit.MILLISECONDS);
+                okHttpBuilder.readTimeout(60000, TimeUnit.MILLISECONDS);
+                OkHttpClient client = okHttpBuilder.build();
+                FormBody formBody = null;
+                Request request;
+                if (isPost && postBuilder != null) {
+                    Log.i("CallApiExecute", "API Url:" + url);
+                }
+
+                Request.Builder reqBuilder = new Request.Builder();
+                String sessionGUID = sharedPreferenceManagerFile.getFromStringSharedPreference(SharedPreferenceManagerFile.SESSION_GUID);
+                Log.e("sessionGUID", "" + sessionGUID);
+                if (!Common.isEmpty(sessionGUID)) {
+                    reqBuilder.addHeader(AppConstant.REQUEST_HEADER_TOKEN, sessionGUID);
+                } else if (!Common.isEmpty(tempSessionGUID)) {
+                    reqBuilder.addHeader(AppConstant.REQUEST_HEADER_TOKEN, tempSessionGUID);
+                }
+                if (formBody != null) {
+                    if (false && !TextUtils.isEmpty(sessionGUID)) {
+                    } else {
+                        request = reqBuilder.url(url).post(formBody).build();
+                    }
+                } else if (body != null) {
+                    request = reqBuilder.url(url).post(body).build();
+                } else {
+                    request = reqBuilder.url(url).build();
+                }
+                Response response = null;
+                String responseStr = null;
+                try {
+                    response = client.newCall(request).execute();
+                    responseStr = response.body().string();
+                    Log.i("CallApiExecute", "CallApiExecute Response got:" + responseStr);
+                    return responseStr;
+                } catch (IOException e) {
+                    Log.i("CallApiExecute", "Exception Message:" + e.getMessage());
+                    e.printStackTrace();
+                }
+                return null;
+            }catch (Exception  e){
+                Log.i("SUMIT_CallApiExecute", "Exception Message:" + e.getMessage());
+                return null;
             }
-            return null;
+
         }
 
         @Override

@@ -3,6 +3,8 @@ package com.newiplquizgame.myipl.fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +20,10 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.gson.Gson;
 import com.newiplquizgame.myipl.R;
+import com.newiplquizgame.myipl.activity.DashboardActivity;
 import com.newiplquizgame.myipl.activity.StartActivity;
 import com.newiplquizgame.myipl.extra.ZoomOutTransformation;
+import com.newiplquizgame.myipl.pkg.ScheduleLst;
 import com.newiplquizgame.myipl.view_pager_Adapter.VPVideoAdapter;
 import com.newiplquizgame.myipl.view_pager_Adapter.VPTournamentAdapter;
 import com.newiplquizgame.myipl.extra.AppConstant;
@@ -30,6 +34,10 @@ import com.newiplquizgame.myipl.pkg.GroupDatum;
 import com.newiplquizgame.myipl.pkg.GruopMaster;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator;
@@ -37,7 +45,7 @@ import me.relex.circleindicator.CircleIndicator;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 
-public class HomeFragment extends Fragment implements APIcall.ApiCallListner {
+public class HomeFragment extends Fragment implements APIcall.ApiCallListner, VPTournamentAdapter.SuccessResponse {
     ViewPager viewpager;
     PagerAdapter adapter;
     GruopMaster mgruopMaster;
@@ -49,8 +57,9 @@ public class HomeFragment extends Fragment implements APIcall.ApiCallListner {
     ViewPager pager_video;
     VPVideoAdapter mVideoAdapter;
     LinearLayout ll_main;
+    VPTournamentAdapter vpTournamentAdapter;
     private ProgressDialog dialog;
-    ZoomOutTransformation  zoom = new ZoomOutTransformation();
+    ZoomOutTransformation zoom = new ZoomOutTransformation();
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
@@ -58,6 +67,7 @@ public class HomeFragment extends Fragment implements APIcall.ApiCallListner {
         findView(root);
         ApiGettournament();
         ApiGetVideos();
+
         return root;
     }
 
@@ -85,27 +95,30 @@ public class HomeFragment extends Fragment implements APIcall.ApiCallListner {
         viewpager.setPadding(100, 0, 100, 0);
         indicator = root.findViewById(R.id.indicator);
 
-        viewpager.setPageTransformer(false,zoom);
+        viewpager.setPageTransformer(false, zoom);
         viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
 
             @Override
             public void onPageSelected(int position) {
             }
 
             @Override
-            public void onPageScrolled(int arg0, float arg1, int arg2) {
-            }
-
-            @Override
             public void onPageScrollStateChanged(int state) {
 
             }
+
+
         });
 
         pager_video = root.findViewById(R.id.pager_video);
         pager_video.setClipToPadding(false);
         pager_video.setPadding(100, 0, 100, 0);
-        pager_video.setPageTransformer(false,zoom);
+        pager_video.setPageTransformer(false, zoom);
     }
 
     @Override
@@ -133,8 +146,21 @@ public class HomeFragment extends Fragment implements APIcall.ApiCallListner {
                     ll_main.setVisibility(View.VISIBLE);
                     mGroupData = new ArrayList<>();
                     mGroupData = mgruopMaster.getData();
-                    adapter = new VPTournamentAdapter(getContext(), mGroupData.get(0).getScheduleLst());
-                    viewpager.setAdapter(adapter);
+
+
+                    List<ScheduleLst> scheduleLsts = mGroupData.get(0).getScheduleLst();
+                    Date c = Calendar.getInstance().getTime();
+//                    String finaldate = Common.getConvertesdDate(String.valueOf(c));
+
+                    String finaldate = "2020-03-29'T'00:00:00";
+                    Collections.sort(scheduleLsts, new Comparator<ScheduleLst>() {
+                        public int compare(ScheduleLst o1, ScheduleLst o2) {
+                            return o1.getPredicStartTime().compareTo(finaldate);
+                        }
+                    });
+                    vpTournamentAdapter = new VPTournamentAdapter(getContext(), scheduleLsts);
+                    vpTournamentAdapter.successResponse = this;
+                    viewpager.setAdapter(vpTournamentAdapter);
                     indicator.setViewPager(viewpager);
                 }
                 hideDialog();
@@ -155,7 +181,7 @@ public class HomeFragment extends Fragment implements APIcall.ApiCallListner {
                 }
                 hideDialog();
             }
-        } catch (Exception e) {
+        } catch (Exception exception) {
             showDialog();
             if (Common.isInternetAvailable(getActivity())) {
                 try {
@@ -171,7 +197,9 @@ public class HomeFragment extends Fragment implements APIcall.ApiCallListner {
             }
 
         }
+
         hideDialog();
+
     }
 
     @Override
@@ -189,5 +217,21 @@ public class HomeFragment extends Fragment implements APIcall.ApiCallListner {
     private void hideDialog() {
         if (dialog != null && dialog.isShowing())
             dialog.dismiss();
+    }
+
+    @Override
+    public void onSuccess() {
+        redirectToAllMatchScreen();
+    }
+
+    public void redirectToAllMatchScreen() {
+        DashboardActivity.navView.getMenu().findItem(R.id.navigation_Prediction).setChecked(true);
+        DashboardActivity.mToolbar.setTitle(getResources().getString(R.string.title_prediction));
+        Fragment newFragment = new AllMatchFragment();
+        Bundle b = new Bundle();
+        newFragment.setArguments(b);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.nav_host_fragment, newFragment);
+        transaction.commit();
     }
 }

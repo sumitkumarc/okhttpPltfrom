@@ -47,15 +47,10 @@ public class AllVideoActivity extends AppCompatActivity implements APIcall.ApiCa
         setContentView(R.layout.activity_all_video);
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        POS = getIntent().getIntExtra("POSTION",0);
-        if (POS == 1){
+        POS = getIntent().getIntExtra("POSTION", 0);
+        if (POS == 1) {
             getSupportActionBar().setTitle("All Videos");
             ApiGetVideos();
-
-        }else {
-            getSupportActionBar().setTitle("All Match's");
-            ApiGettournament();
-
         }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -96,18 +91,9 @@ public class AllVideoActivity extends AppCompatActivity implements APIcall.ApiCa
         apIcall.execute(url, APIcall.OPERATION_ALL_VIDEO, this);
     }
 
-    private void ApiGettournament() {
-        String url = AppConstant.GET_TOURNAMENT;
-        APIcall apIcall = new APIcall(getApplicationContext());
-        apIcall.isPost(false);
-        apIcall.execute(url, APIcall.OPERATION_ALL_TOURNAMENT, this);
-    }
 
     @Override
     public void onStartLoading(int operationCode) {
-        if (operationCode == APIcall.OPERATION_ALL_TOURNAMENT) {
-            showDialog();
-        }
         if (operationCode == APIcall.OPERATION_ALL_VIDEO) {
             showDialog();
         }
@@ -121,21 +107,6 @@ public class AllVideoActivity extends AppCompatActivity implements APIcall.ApiCa
     @Override
     public void onSuccess(int operationCode, String response, Object customData) {
         try {
-            if (operationCode == APIcall.OPERATION_ALL_TOURNAMENT) {
-                Gson gson = new Gson();
-                mgruopMaster = gson.fromJson(response, GruopMaster.class);
-                if (mgruopMaster.getStatus() == 1) {
-                    Toast.makeText(this, "" + mgruopMaster.getMsg(), Toast.LENGTH_SHORT).show();
-                } else {
-                    ll_no_data.setVisibility(View.GONE);
-                    recycler_view.setVisibility(View.VISIBLE);
-                    mGroupData = new ArrayList<>();
-                    mGroupData = mgruopMaster.getData();
-                    RVAllMatchListAdapter mVideoAdapter = new RVAllMatchListAdapter(this, mGroupData.get(0).getScheduleLst());
-                    recycler_view.setAdapter(mVideoAdapter);
-                }
-                hideDialog();
-            }
             if (operationCode == APIcall.OPERATION_ALL_VIDEO) {
 
                 Gson gson = new Gson();

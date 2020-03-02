@@ -17,7 +17,7 @@ public class GruopMaster {
     private List<GroupDatum> data = null;
     @SerializedName("Result")
     @Expose
-    private Object result;
+    private GruopResult result;
 
     public Integer getStatus() {
         return status;
@@ -43,11 +43,11 @@ public class GruopMaster {
         this.data = data;
     }
 
-    public Object getResult() {
+    public GruopResult getResult() {
         return result;
     }
 
-    public void setResult(Object result) {
+    public void setResult(GruopResult result) {
         this.result = result;
     }
 

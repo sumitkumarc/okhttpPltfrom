@@ -73,10 +73,10 @@
                 android:layout_weight="0.20"
                 android:gravity="center">
 
-                <com.newiplquizgame.myipl.extra.CircleImageView
+                <de.hdodenhof.circleimageview.CircleImageView
                     android:layout_width="@dimen/_70sdp"
                     android:layout_height="@dimen/_70sdp"
-                    android:src="@drawable/login_back" />
+                    android:src="@drawable/logo" />
             </LinearLayout>
 
             <LinearLayout

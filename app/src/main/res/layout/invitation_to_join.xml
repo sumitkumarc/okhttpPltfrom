@@ -100,7 +100,7 @@
                         android:layout_width="125.0dip"
                         android:layout_height="125.0dip"
                         android:layout_gravity="center"
-                        android:src="@drawable/login_back" />
+                        android:src="@drawable/logo" />
 
                 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

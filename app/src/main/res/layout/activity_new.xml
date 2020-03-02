@@ -14,7 +14,7 @@
         android:layout_height="100dp"
         android:layout_centerVertical="true"
         android:gravity="center"
-        android:src="@drawable/login_back" />
+        android:src="@drawable/logo" />
 
     <TextView
         android:id="@+id/txt_info"

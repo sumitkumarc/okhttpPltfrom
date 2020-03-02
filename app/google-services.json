@@ -1,0 +1,85 @@
+{
+  "project_info": {
+    "project_number": "58715624710",
+    "firebase_url": "https://my-crictipp-1582173472239.firebaseio.com",
+    "project_id": "my-crictipp-1582173472239",
+    "storage_bucket": "my-crictipp-1582173472239.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58715624710:android:d1dded98f1e6ca1e4e3a87",
+        "android_client_info": {
+          "package_name": "com.firebase.sumit.logindemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "58715624710-vpgeoe6707hjbdee6essklhhem5q1o31.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.firebase.sumit.logindemo",
+            "certificate_hash": "114ea7f489073a134dcefe07e775b83605792905"
+          }
+        },
+        {
+          "client_id": "58715624710-61cv2mrf258trjdvseh0t2j3q1grdo27.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdOqe4I_Y1BugxqA01T-PBoq44nqcjet8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "58715624710-61cv2mrf258trjdvseh0t2j3q1grdo27.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58715624710:android:e608a48beb7e2f954e3a87",
+        "android_client_info": {
+          "package_name": "com.newiplquizgame.myipl.myipl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "58715624710-dkq1dhvconkir4jbdlr5fu0hd4rct1rg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.newiplquizgame.myipl.myipl",
+            "certificate_hash": "114ea7f489073a134dcefe07e775b83605792905"
+          }
+        },
+        {
+          "client_id": "58715624710-61cv2mrf258trjdvseh0t2j3q1grdo27.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdOqe4I_Y1BugxqA01T-PBoq44nqcjet8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "58715624710-61cv2mrf258trjdvseh0t2j3q1grdo27.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
